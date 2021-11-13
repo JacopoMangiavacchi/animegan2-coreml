@@ -88,6 +88,8 @@ class Generator(nn.Module):
         )
         
     def forward(self, input, align_corners=True):
+        input = input / 127.5 - 1
+
         out = self.block_a(input)
         half_size = out.size()[-2:]
         out = self.block_b(out)
@@ -106,5 +108,9 @@ class Generator(nn.Module):
         out = self.block_e(out)
 
         out = self.out_layer(out)
+
+        out = (out + 1) * 127.5
+        out = out.clamp(0.0, 255.0)
+
         return out
         
