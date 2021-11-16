@@ -46,7 +46,8 @@ class InvertedResBlock(nn.Module):
             out = input + out
         return out
 
-    
+
+# +
 class Generator(nn.Module):
     def __init__(self, ):
         super().__init__()
@@ -87,7 +88,7 @@ class Generator(nn.Module):
             nn.Tanh()
         )
         
-    def forward(self, input, align_corners=True):
+    def forward(self, input): #, align_corners=True):
         input = input / 127.5 - 1
 
         out = self.block_a(input)
@@ -95,16 +96,22 @@ class Generator(nn.Module):
         out = self.block_b(out)
         out = self.block_c(out)
         
-        if align_corners:
-            out = F.interpolate(out, half_size, mode="bilinear", align_corners=True)
-        else:
-            out = F.interpolate(out, scale_factor=2, mode="bilinear", align_corners=False)
+#         if align_corners:
+#             out = F.interpolate(out, half_size, mode="bilinear", align_corners=True)
+#         else:
+#             out = F.interpolate(out, scale_factor=2, mode="bilinear", align_corners=False)
+
+        out = F.interpolate(out, half_size, mode="bilinear", align_corners=True)
+    
         out = self.block_d(out)
 
-        if align_corners:
-            out = F.interpolate(out, input.size()[-2:], mode="bilinear", align_corners=True)
-        else:
-            out = F.interpolate(out, scale_factor=2, mode="bilinear", align_corners=False)
+#         if align_corners:
+#             out = F.interpolate(out, input.size()[-2:], mode="bilinear", align_corners=True)
+#         else:
+#             out = F.interpolate(out, scale_factor=2, mode="bilinear", align_corners=False)
+
+        out = F.interpolate(out, input.size()[-2:], mode="bilinear", align_corners=True)
+
         out = self.block_e(out)
 
         out = self.out_layer(out)
@@ -113,4 +120,29 @@ class Generator(nn.Module):
         out = out.clamp(0.0, 255.0)
 
         return out
+    
+    
+    
+#       interpolate(Tensor input, int? size=None, float[]? scale_factor=None, str mode="nearest", bool? align_corners=None, bool? recompute_scale_factor=None) -> (Tensor):
+#   Expected a value of type 'Optional[List[float]]' for argument 'scale_factor' but instead found type 'int'.
+  
+#   interpolate(Tensor input, int[]? size=None, float[]? scale_factor=None, str mode="nearest", bool? align_corners=None, bool? recompute_scale_factor=None) -> (Tensor):
+#   Expected a value of type 'Optional[List[float]]' for argument 'scale_factor' but instead found type 'int'.
+  
+#   interpolate(Tensor input, int? size=None, float? scale_factor=None, str mode="nearest", bool? align_corners=None, bool? recompute_scale_factor=None) -> (Tensor):
+#   Expected a value of type 'Optional[float]' for argument 'scale_factor' but instead found type 'int'.
+  
+#   interpolate(Tensor input, int[]? size=None, float? scale_factor=None, str mode="nearest", bool? align_corners=None, bool? recompute_scale_factor=None) -> (Tensor):
+#   Expected a value of type 'Optional[float]' for argument 'scale_factor' but instead found type 'int'.
+
+# The original call is:
+#   File "/Users/jacopo/source/personal/animegan2-coreml/model.py", line 101
+#             out = F.interpolate(out, half_size, mode="bilinear", align_corners=True)
+#         else:
+#             out = F.interpolate(out, scale_factor=2, mode="bilinear", align_corners=False)
+#                   ~~~~~~~~~~~~~ <--- HERE
+#         out = self.block_d(out)
         
+        
+        
+
